@@ -145,22 +145,26 @@ El contrato de dispersión permite la distribución controlada de CELO a direcci
 ```solidity
 function disperseCelo(address _recipient) external onlyDispersion nonReentrant
 ```
+Permite dispersar una cantidad fija de CELO a una dirección específica. Solo puede ser llamado por la dirección autorizada de dispersión.
 
 ### 2. Gestión de Gobernanza
 ```solidity
 function transferGovernance(address _newGovernance) external onlyGovernance
 function updateDispersion(address _newDispersion) external onlyGovernance
 ```
+Permite actualizar las direcciones de gobernanza y dispersión. Solo puede ser llamado por la gobernanza actual.
 
 ### 3. Configuración de Montos
 ```solidity
 function updateFixedAmount(uint256 _newFixedAmount) external onlyGovernance
 ```
+Permite actualizar la cantidad fija de CELO que se dispersará en cada transacción.
 
 ### 4. Retiro de Fondos
 ```solidity
 function withdrawCelo() external onlyGovernance nonReentrant
 ```
+Permite a la gobernanza retirar todo el CELO del contrato.
 
 ## 🔐 Seguridad
 
@@ -176,4 +180,18 @@ function withdrawCelo() external onlyGovernance nonReentrant
 - `DispersionUpdated`: Registra cambios en la dirección de dispersión
 - `FixedAmountUpdated`: Registra cambios en el monto fijo
 - `CeloWithdrawn`: Registra retiros de CELO
+
+## 🛠️ Tecnologías Utilizadas
+
+- **Solidity ^0.8.20**: Lenguaje de programación para el contrato
+- **OpenZeppelin**: Implementaciones de seguridad y control de acceso
+- **ReentrancyGuard**: Protección contra ataques de reentrancia
+
+## 📄 Licencia
+
+Este contrato está licenciado bajo MIT.
+
+## 📂 Contacto y Soporte
+
+Para consultas o soporte, puedes contactarnos en [[intechchain](https://intechchain.com/)].
 
