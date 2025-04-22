@@ -1,197 +1,70 @@
-# 🔗 Smart Contract de Staking
+# DispersionContract
 
-## 📝 Descripción
-Smart contract de staking desarrollado con Solidity y Hardhat que permite a los usuarios hacer staking de tokens y recibir recompensas.
+## Descripción
+El `DispersionContract` es un contrato inteligente desarrollado en Solidity que permite la dispersión controlada de CELO (la criptomoneda nativa de la red Celo) a direcciones específicas, con autorización de gobernanza.
 
-## 🛠 Tecnologías
+## Características Principales
+
+- **Control de Gobernanza**: Solo las direcciones autorizadas pueden realizar operaciones críticas.
+- **Dispersión Fija**: Permite enviar una cantidad predefinida de CELO a direcciones específicas.
+- **Seguridad**: Implementa `ReentrancyGuard` para prevenir ataques de reentrada.
+- **Flexibilidad**: Permite actualizar las direcciones de gobernanza y dispersión, así como la cantidad fija a dispersar.
+
+## Funcionalidades
+
+1. **Dispersión de CELO**
+   - Envía una cantidad fija de CELO a una dirección específica
+   - Solo puede ser ejecutado por la dirección de dispersión autorizada
+
+2. **Gestión de Gobernanza**
+   - Transferencia del rol de gobernanza a nuevas direcciones
+   - Actualización de la dirección de dispersión
+   - Actualización de la cantidad fija de CELO a dispersar
+   - Retiro de CELO del contrato
+
+3. **Eventos**
+   - `CeloDispersed`: Registra cuando se dispersa CELO
+   - `GovernanceUpdated`: Registra cambios en la dirección de gobernanza
+   - `DispersionUpdated`: Registra cambios en la dirección de dispersión
+   - `FixedAmountUpdated`: Registra cambios en la cantidad fija
+   - `CeloWithdrawn`: Registra retiros de CELO
+
+## Requisitos
+
 - Solidity ^0.8.20
-- Hardhat
-- Ethers.js
-- OpenZeppelin Contracts
+- OpenZeppelin Contracts (para ReentrancyGuard)
 
-## 🚀 Instalación
+## Uso
 
-1. Clona el repositorio
+1. **Inicialización**
+   ```solidity
+   constructor(
+       address _governance,
+       address _dispersion,
+       uint256 _fixedAmount
+   )
+   ```
 
-# 📘 Contrato de Staking cCOP
+2. **Dispersión de CELO**
+   ```solidity
+   function disperseCelo(address _recipient)
+   ```
 
-## 📌 Descripción General
+3. **Gestión de Gobernanza**
+   ```solidity
+   function transferGovernance(address _newGovernance)
+   function updateDispersion(address _newDispersion)
+   function updateFixedAmount(uint256 _newFixedAmount)
+   function withdrawCelo()
+   ```
 
-Este contrato inteligente permite a los usuarios hacer staking de tokens cCOP para recibir recompensas basadas en diferentes períodos de tiempo. **Importante: Solo los usuarios incluidos en la lista blanca pueden participar en el staking.** El contrato incluye características avanzadas como lista blanca de usuarios, paginación para consultas eficientes y un sistema de gobernanza para gestionar parámetros críticos.
+## Seguridad
 
-## ⚠️ Requisito Fundamental: Lista Blanca
+- Todas las funciones críticas están protegidas por modificadores de acceso
+- Implementa protección contra reentrada
+- Validaciones de direcciones y cantidades
+- Verificaciones de balance antes de transferencias
 
-Para utilizar el contrato, los usuarios **deben estar incluidos en la lista blanca** previamente por los administradores del contrato. Cualquier intento de hacer staking desde una dirección no incluida en la lista blanca será rechazado por el contrato.
+## Eventos
 
-## 🔒 Períodos de Staking Disponibles
-
-El contrato ofrece tres períodos de bloqueo para staking:
-
-- **30 días**: Ideal para inversiones a corto plazo
-- **60 días**: Para inversores de mediano plazo
-- **90 días**: Para maximizar rendimientos a largo plazo
-
-## 💰 Tasas de Interés y Distribución
-
-| Período | Tasa Nominal Mensual | Distribución de Pool |
-|---------|----------------------|----------------------|
-| 30 días | 1.25%                | 40%                  |
-| 60 días | 1.50%                | 35%                  |
-| 90 días | 2.00%                | 25%                  |
-
-## 📊 Límites de Staking 
-
-Para asegurar la sostenibilidad del sistema, se han establecido los siguientes límites:
-
-| Período | Límite Máximo (cCOP)  |
-|---------|------------------------|
-| 30 días | 3,160,493,827 cCOP     |
-| 60 días | 2,264,877,414 cCOP     |
-| 90 días | 1,177,902,918 cCOP     |
-
-## 🔄 Casos de Uso
-
-### 1. Gestión de Lista Blanca
-Solo los usuarios incluidos en la lista blanca por la gobernanza pueden participar en el staking. Este es un requisito previo para utilizar cualquier otra funcionalidad.
-
-```solidity
-function addToWhitelist(address _user) external onlyGovernance
-function removeFromWhitelist(address _user) external onlyGovernance
-function addMultipleToWhitelist(address[] calldata _users) external onlyGovernance
-function isWhitelisted(address _user) public view returns (bool)
-```
-
-### 2. Staking de Tokens
-Los usuarios en lista blanca pueden depositar sus tokens cCOP eligiendo uno de los tres períodos disponibles. Los tokens quedarán bloqueados hasta finalizar el período seleccionado.
-
-```solidity
-function stake(uint256 _amount, uint256 _duration) external onlyWhitelisted
-```
-
-### 3. Retiro de Tokens y Recompensas
-Una vez finalizado el período de staking, los usuarios pueden retirar su capital inicial más las recompensas generadas.
-
-```solidity
-function withdraw(uint256 _stakeIndex) external
-```
-
-### 4. Consulta de Staking Activos
-Los usuarios pueden consultar todos sus stakes activos o utilizar la paginación para obtener resultados más específicos.
-
-```solidity
-function getUserStakes(address _user) external view
-function getUserStakesPaginated(address _user, uint256 _offset, uint256 _limit) external view
-function getTotalActiveStakesPaginated(address _user, uint256 _offset, uint256 _limit) external view
-```
-
-### 5. Funciones de Gobernanza
-La gobernanza puede actualizar parámetros críticos como las tasas de interés y recuperar tokens no reclamados.
-
-```solidity
-function updateDeveloperWallet(address _newWallet) external onlyGovernance
-function updateGovernance(address _newGovernance) external onlyGovernance
-function updateStakingRates(uint256 _rate30, uint256 _rate60, uint256 _rate90) external onlyGovernance
-function sweepUnclaimedTokens(uint256 _daysThreshold) external onlyGovernance
-```
-
-## 📈 Cálculo de Recompensas
-
-Las recompensas se calculan en base a la tasa nominal mensual y se pagan al finalizar el período de staking. Se aplica una comisión del 5% sobre las recompensas generadas, destinada al desarrollador.
-
-```solidity
-function calculateRewards(Stake memory _stake) public view returns (uint256)
-```
-
-## 🔐 Distribución de Intereses
-
-El contrato mantiene un pool de intereses, distribuido proporcionalmente entre los diferentes períodos de staking:
-- 40% para staking de 30 días
-- 35% para staking de 60 días
-- 25% para staking de 90 días
-
-## 🛠️ Tecnologías Utilizadas
-
-- **Solidity ^0.8.20**: Lenguaje de programación para el contrato
-- **OpenZeppelin**: Implementaciones estándar de tokens ERC20, seguridad y control de acceso
-- **SafeERC20**: Para transferencias seguras de tokens
-- **ReentrancyGuard**: Protección contra ataques de reentrancia
-- **Ownable**: Control de propiedad y permisos
-
-## 📄 Licencia
-
-Este contrato está licenciado bajo MIT.
-
-## 📂 Contacto y Soporte
-
-Para consultas o soporte, puedes contactarnos en [[intechchain](https://intechchain.com/)].
-
-# 📘 Contrato de Dispersión
-
-## 📌 Descripción General
-
-El contrato de dispersión permite la distribución controlada de CELO a direcciones específicas, con autorización de gobernanza. Este contrato está diseñado para manejar transferencias seguras y auditables de CELO.
-
-## 🔒 Características Principales
-
-- Control de gobernanza para autorizar transacciones
-- Cantidad fija de CELO por dispersión
-- Protección contra reentrancia
-- Eventos para auditoría
-- Gestión de roles (gobernanza y dispersión)
-
-## 🔄 Funcionalidades
-
-### 1. Dispersión de CELO
-```solidity
-function disperseCelo(address _recipient) external onlyDispersion nonReentrant
-```
-Permite dispersar una cantidad fija de CELO a una dirección específica. Solo puede ser llamado por la dirección autorizada de dispersión.
-
-### 2. Gestión de Gobernanza
-```solidity
-function transferGovernance(address _newGovernance) external onlyGovernance
-function updateDispersion(address _newDispersion) external onlyGovernance
-```
-Permite actualizar las direcciones de gobernanza y dispersión. Solo puede ser llamado por la gobernanza actual.
-
-### 3. Configuración de Montos
-```solidity
-function updateFixedAmount(uint256 _newFixedAmount) external onlyGovernance
-```
-Permite actualizar la cantidad fija de CELO que se dispersará en cada transacción.
-
-### 4. Retiro de Fondos
-```solidity
-function withdrawCelo() external onlyGovernance nonReentrant
-```
-Permite a la gobernanza retirar todo el CELO del contrato.
-
-## 🔐 Seguridad
-
-- Implementa ReentrancyGuard para prevenir ataques de reentrancia
-- Verificaciones de direcciones válidas
-- Control de acceso basado en roles
-- Validación de balances antes de transferencias
-
-## 📊 Eventos
-
-- `CeloDispersed`: Registra cada dispersión exitosa
-- `GovernanceUpdated`: Registra cambios en la gobernanza
-- `DispersionUpdated`: Registra cambios en la dirección de dispersión
-- `FixedAmountUpdated`: Registra cambios en el monto fijo
-- `CeloWithdrawn`: Registra retiros de CELO
-
-## 🛠️ Tecnologías Utilizadas
-
-- **Solidity ^0.8.20**: Lenguaje de programación para el contrato
-- **OpenZeppelin**: Implementaciones de seguridad y control de acceso
-- **ReentrancyGuard**: Protección contra ataques de reentrancia
-
-## 📄 Licencia
-
-Este contrato está licenciado bajo MIT.
-
-## 📂 Contacto y Soporte
-
-Para consultas o soporte, puedes contactarnos en [[intechchain](https://intechchain.com/)].
-
+El contrato emite eventos para todas las operaciones importantes, permitiendo un seguimiento transparente de las transacciones en la blockchain.
