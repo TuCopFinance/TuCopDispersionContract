@@ -68,3 +68,6 @@ El `DispersionContract` es un contrato inteligente desarrollado en Solidity que 
 ## Eventos
 
 El contrato emite eventos para todas las operaciones importantes, permitiendo un seguimiento transparente de las transacciones en la blockchain.
+
+## Despliegue
+https://celoscan.io/address/0x55fB650E304eB4C026671A015B76d21e37D266D6
